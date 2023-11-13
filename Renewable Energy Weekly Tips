@@ -11,9 +11,9 @@ renewable_energy_tips = [
     "Switch to a renewable energy provider or consider green energy options.",
 ]
 
-# Get the current week of the month
+# Get the current week of the month using ISO week number
 current_date = datetime.date.today()
-current_week = current_date.day // 7 + 1
+current_week = current_date.isocalendar()[1]
 
 # Ensure the current_week is within the range of tips
 if current_week <= len(renewable_energy_tips):
