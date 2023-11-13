@@ -78,14 +78,15 @@ best_cell(grid_wiki)
 
 Step 6.
 def solve_sudoku(grid):
-    best=best_cell(grid)
+    best = best_cell(grid)
     possibilities = [i for i in best[2] if i > 0]
     possnumbers = len(possibilities)
-    if best[0] ==- 1 or best[1] ==- 1:
+
+    if best[0] == -1 or best[1] == -1:
         return 0
-    elif possbumbers >= 1:
-        grid[best[0]][best[1]] = possibities[0]
-    solve_sudoku(grid)
+    elif possnumbers >= 1:
+        grid[best[0]][best[1]] = possibilities[0]
+        solve_sudoku(grid)
     
 solve_sudoku(grid_wiki)
 
