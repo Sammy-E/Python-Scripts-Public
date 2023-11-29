@@ -1,23 +1,114 @@
 #The goal is to make a sudoku puzzle
 
+grid_wiki =   [[5, 3, 0, 0, 7, 0, 0, 0, 0],
+               [6, 0, 0, 1, 9, 5, 0, 0, 0],
+               [0, 9, 8, 0, 0, 0, 0, 6, 0],
+               [8, 0, 0, 0, 6, 0, 0, 0, 3],
+               [4, 0, 0, 8, 0, 3, 0, 0, 1],
+               [7, 0, 0, 0, 2, 0, 0, 0, 6],
+               [0, 6, 0, 0, 0, 0, 2, 8, 0],
+               [0, 0, 0, 4, 1, 9, 0, 0, 5],
+               [0, 0, 0, 0, 8, 0, 0, 7, 9]]
+
+def row_unused_digit(grid, valid_digit, i):
+    for k in range(9):
+        if grid[i][k] > 0:
+            valid_digit[grid[i][k] - 1] = 0
+    
+def column_unused_digit(grid, valid_digit, j):
+    for k in range(9):
+        if grid[k][j] > 0:
+            valid_digit[grid[k][j] - 1] = 0
+            
+def block_unused_digit(grid, valid_digit, i, j):
+    x = i // 3
+    x *= 3
+    y = j // 3
+    y *= 3
+    
+    for k in range(x, x+3):
+        for v in range(y, y+3):
+            if grid[k][v] > 0:
+                valid_digit[grid[k][v] - 1] = 0
+
+#Not called in this program
+def possible_number_test(grid, i, j):
+    allNums = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+    presentNums = set()
+    for k in range(9):
+        presentNums.add(grid[i][k])
+        presentNums.add(grid[k][j])
+    x = i // 3
+    x *= 3
+    y = j // 3
+    y *= 3
+    for k in range(x, x+3):
+        for v in range(y, y+3):
+            presentNums.add(grid[k][v])
+    return list(allNums - presentNums)
+ 
+def possible_number(grid, i, j):
+    possibleNums = []
+    valid_digit = []
+    for k in range(9):
+        valid_digit.append(1)
+        
+    row_unused_digit(grid, valid_digit, i)
+    column_unused_digit(grid, valid_digit, j)  
+    block_unused_digit(grid, valid_digit, i, j) 
+    
+    for k in range(9):
+        if valid_digit[k] > 0:
+            possibleNums.append(k+1)
+
+    return possibleNums
+
+def best_cell(grid):
+    x = 0
+    y = 0
+    leastPossibleNums = 9
+    leastPossibleNumsList = None
+    for i in range(9):
+        for j in range(9):
+            if grid[i][j] == 0:
+                temp = possible_number(grid, i, j);
+                if(len(temp) < leastPossibleNums):
+                    x = i
+                    y = j
+                    leastPossibleNums = len(temp)
+                    leastPossibleNumsList = temp
+    
+    valid_digit = []
+    for k in range(9):
+        valid_digit.append(0)
+    
+    for item in leastPossibleNumsList:
+        valid_digit[item-1] = 1 
+    
+    return [x, y, valid_digit]
+
+def is_0_in(grid):
+    answer = False
+    for item in grid:
+        if(0 in item):
+            answer = True
+            break
+            
+    return answer
+        
 def solve_sudoku(grid):
-    best = best_cell(grid)
-    possibilities = [i for i in best[2] if i > 0]
-    possnumbers = len(possibilities)
+    #print(is_0_in(grid))
+    while(is_0_in(grid)):
+        bestCellData = best_cell(grid);
 
-    if best[0] == -1 or best[1] == -1:
-        # Puzzle solved
-        return 1
-    elif possnumbers >= 1:
-        for possibility in possibilities:
-            grid[best[0]][best[1]] = possibility
-
-            # Recursive call to solve_sudoku
-            if solve_sudoku(grid):
-                return 1  # Solution found, exit the recursion
-
-            # If the current possibility didn't lead to a solution, backtrack
-            grid[best[0]][best[1]] = 0
-
-    # No solution found
-    return 0
+        if (1 in bestCellData[2]):
+            for i in range(9):
+                if(bestCellData[2][i] == 1):
+                    grid[bestCellData[0]][bestCellData[1]] = i+1
+                    break
+        else:
+            return 0;
+    
+print(grid_wiki)
+solve_sudoku(grid_wiki)
+print(grid_wiki)
